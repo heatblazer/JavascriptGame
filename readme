@@ -1,0 +1,7 @@
+Tested in Firefox, Chrome, Midori
+Recommended browser Firefox
+
+Libs used: none
+
+1. Midori does not disables context menu on r-click.
+2. Still needs optimizations when firing multiple rockets. 
