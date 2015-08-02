@@ -272,20 +272,24 @@ window.onload = function(e) {
 		 * TODO add the get getSteps() to 
 		 * travel in a pure line like missele
 		 * */
-			var e2 = err;
-			if ( e2 >= -dx ) {
-				err -=dy; 
-				x += sx; 
-			}
-			if ( e2 <= dy) {
-				err += dx;
-				y += sy;
-			}
-			sniper.setXYRWH(x, y, sniper.getXYRWH().r, sniper.getXYRWH().w,
+		 var snipermove = 0;
+		 if ( snipermove++ < dx * dy /2 ) {
+				var e2 = err;
+				if ( e2 >= -dx ) {
+					err -=dy; 
+					x += sx; 
+				}
+				if ( e2 <= dy) {
+					err += dx;
+					y += sy;
+				}
+				sniper.setXYRWH(x, y, sniper.getXYRWH().r, sniper.getXYRWH().w,
 						sniper.getXYRWH().h );
-			sniper.getSprite().setXYR(x, y, 
+				sniper.getSprite().setXYR(x, y, 
 								sniper.getSprite().getXYR().r);
-								
+			} else {
+				// none
+			}
 			id = setTimeout(sniper.targetTo, 1000/60);
 
     } //end move sniper									
