@@ -4,4 +4,7 @@ Recommended browser Firefox
 Libs used: none
 
 1. Midori does not disables context menu on r-click.
-2. Still needs optimizations when firing multiple rockets. 
+2. Still needs optimizations when firing multiple rockets.
+3. [TODO]Must add XMLHttpRequest for downlading the images from server.
+4. [TODO]The game object wrapper must be able to save it`s state with toJSON
+ 
