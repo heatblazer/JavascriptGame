@@ -11,6 +11,15 @@
  * 
  * */
 
+var GameObjectWrapper = function() {
+	
+	this.newGame = function() {
+		//wrap the whole game code
+		//for use with toJSOn for serializing
+	}
+}
+
+
 function drawCrosshair(x, y, w, h, rot, ctx) {
 	var c = ctx;
 	c.fillStyle = "red";
@@ -433,6 +442,12 @@ var mainrender = function(timeout) {
 		// always render main entity sprite
 		sniper.playAnimation();
 		
+		(function() {
+			/* pefrom some game logic,
+			 * check game conditions, etc.
+			 * */
+		 })(); // not implemented
+		
 		/* check for callbacks to be called in a stacked order */
 		for (var i=0; i < callbacksStack.length; i++ ) {
 			/* do not pop() here because some
@@ -441,6 +456,8 @@ var mainrender = function(timeout) {
 			*/ 
 			callbacksStack[i]();
 		}
+		/* experimental pause/resume the render scene*/
+		
 		if ( isPaused ) clearTimeout(mainRenderId);
 		else  mainRenderId = setTimeout(mainrender, timeout);
 }//end mainrender
@@ -566,5 +583,6 @@ var mainrender = function(timeout) {
 	   } // end PAUSE option
 	    
 }; // END wondow.onload(); 			
+
 
 /*************************************************************************/
