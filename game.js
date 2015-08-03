@@ -394,6 +394,25 @@ window.onload = function(e) {
 				var ey =  m.getXYR().y;
 				
 				var eangle = Math.floor(Math.random() * 180); /*experimental*/
+				/* EXPLOSION */
+				
+				/* add multipe explosions
+				 * to test the callbacksstack
+				 * and to add more fun */
+				var explosion2 = new SpriteSheet("explosion.png",
+						ex+60, ey, eangle, 
+						5120/40, 128-30, 4, 32, dblctx[0]);
+				
+				var explosion3 = new SpriteSheet("explosion.png",
+						ex, ey+60, eangle, 
+						5120/40, 128-30, 4, 32, dblctx[0]);
+				var explosion4 = new SpriteSheet("explosion.png",
+						ex-60, ey, eangle, 
+						5120/40, 128-30, 4, 32, dblctx[0]);
+				var explosion5 = new SpriteSheet("explosion.png",
+						ex, ey-60, eangle, 
+						5120/40, 128-30, 4, 32, dblctx[0]);
+						
 				var explosion = new SpriteSheet("explosion.png",
 					ex, ey, eangle, /*play flames in the opposite of rocket destination */
 					5120/40, 128-30, 4, 32, dblctx[0]); /*??? image not working proberly*/
@@ -409,6 +428,10 @@ window.onload = function(e) {
 							clearTimeout(id2);
 							console.log("Stop explosion");
 							callbacksStack.pop();
+							callbacksStack.pop();
+							callbacksStack.pop();
+							callbacksStack.pop();
+							callbacksStack.pop();
 							return id2;
 						}
 						id2 = setTimeout(customRender, time);
@@ -416,6 +439,10 @@ window.onload = function(e) {
 					/* ok */
 					//customRender();
 					callbacksStack.push(explosion.render);
+					callbacksStack.push(explosion4.render);
+					callbacksStack.push(explosion2.render);
+					callbacksStack.push(explosion3.render);
+					callbacksStack.push(explosion5.render);
 					customRender(60);
 				} // ENDIF
 		}
@@ -566,6 +593,7 @@ var mainrender = function(timeout) {
 				
 				switch (e.which) {
 					case 1: /* fire missl */
+							/* add variable is firing to prevent moving  */
 							sniper.fireMisseleTo(e.clientX, e.clientY);
 							break;
 							
