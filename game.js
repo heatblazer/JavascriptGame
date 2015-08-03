@@ -11,6 +11,7 @@
  * 
  * */
 
+//not used
 var GameObjectWrapper = function() {
 	
 	this.newGame = function() {
@@ -20,6 +21,31 @@ var GameObjectWrapper = function() {
 }
 
 
+/*@Unused*/
+function requestDataFile(dataUrl) {
+	
+	var xmlHttpReq ;
+	if ( window.XMLHttpRequest) {
+		/* opera, safari, firefox, chrome, IE9+ */
+		xmlHttpReq = new XMLHttpRequest();
+	} else {
+		
+		xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	xmlHttpReq.onreadystate = function() {
+		
+		if ( xmlHttpReq.readyState == 4 && 
+				xmlHttpReq.status == 200 ) {
+				// get the object as blob
+		}
+	} // end 
+	xmlHttpReq.open("GET", dataUrl, true);
+	xmlHttpReq.send();
+}
+
+
+/*@Unused*/
 function drawCrosshair(x, y, w, h, rot, ctx) {
 	var c = ctx;
 	c.fillStyle = "red";
@@ -263,7 +289,6 @@ window.onload = function(e) {
 	
 /* TARGET function for sniper */
 	sniper.targetTo = function() {
-		
 		x = sniper.getXYRWH().x;
 		y = sniper.getXYRWH().y;
 		var _tX = sniper.getTargetXY().x;
@@ -362,7 +387,6 @@ window.onload = function(e) {
 			} else {
 				misselescount = 0;
 				/* Explode */
-//				m.stop();
 				callbacksStack.pop();
 				//clearTimeout(id);
 				/* 5120 x 128 , 33 frames */
@@ -442,11 +466,11 @@ var mainrender = function(timeout) {
 		// always render main entity sprite
 		sniper.playAnimation();
 		
-		(function() {
+		(function(e) {
 			/* pefrom some game logic,
 			 * check game conditions, etc.
 			 * */
-		 })(); // not implemented
+		 })(/*vaargs*/); // not implemented
 		
 		/* check for callbacks to be called in a stacked order */
 		for (var i=0; i < callbacksStack.length; i++ ) {
