@@ -11,14 +11,38 @@
  * 
  * */
 
-//not used
-var GameObjectWrapper = function() {
+var Matrix = function() {
 	
-	this.newGame = function() {
-		//wrap the whole game code
-		//for use with toJSOn for serializing
+	this.identityMatrix = function() {
+		
+		return [1, 0, 0,
+				0, 1, 0,
+				0, 0, 1 ];
+	} // get the identity
+	var identity = [1, 0, 0,
+					0, 1, 0,
+					0, 0, 1];
+	
+	this.affineTransformByIdentMat = function(vec2D) {
+		
+		if ( vec2D.length !== 3 ) return null;
+		
+		retVec = [];
+		retVec[0] = vec2D[0] *identity[0] +
+					vec2D[1] * identity[1] +
+					vec2D[2] * identity[2];
+					
+		retVec[1] = vec2D[0] *identity[3] +
+					vec2D[1] * identity[4] +
+					vec2D[2] * identity[5];
+		retVec[2] = 1;
+		return retVec;
 	}
-}
+} // END MATRIX 
+
+
+
+//not used
 
 
 /*@Unused*/
@@ -73,13 +97,15 @@ Array.prototype.swap = function(i, j) {
 	this[j] = a;
 }
 
-/*@Unused*/
-function distance(x1, y1, x2, y2) {
-	var dx = x2 - x1;
-	var dy = y2 - y1;
-	var d  = Math.sqrt( (dx*dx) + (dy*dy) );
-	return d; 
-}
+
+var GameObjectWrapper = function() {
+	
+	this.newGame = function() {
+		//wrap the whole game code
+		//for use with toJSOn for serializing
+	
+
+
 /*@Unused*/
 var lockmove = false;		
 var ctx=null;
@@ -132,6 +158,7 @@ var SpriteSheet = function(path, x, y, rot, frameW, frameH,
 		col = Math.floor(currframe % framesPerRow);
 		
 		_ctx.save();
+		
 		_ctx.translate(_x+frameW/2, _y+frameH/2);
 		_ctx.rotate(_r); /*NOTE!!! this function uses degrees
 							not radians!!! */		
@@ -177,7 +204,7 @@ var Entity = function(x,y,w,h,r) {
 	var _tX, _tY; 
 	
 	var sprite = null;
-	
+	var self = this;
 	this.getSprite = function() {
 		return this.sprite;
 	}
@@ -208,10 +235,17 @@ var Entity = function(x,y,w,h,r) {
 } // END ENTYTY
 
 
+Entity.prototype.drawBox = function(col, ctx) {
+	ctx.fillStyle = col;
+	ctx.save();
+	ctx.fillRect(self._x, self._y, self._w, self._h);
+	ctx.restore();
+}
+
 Entity.prototype.say = function() {
 	console.log(this.toString()); //just a test
 }
-
+/*@Unused*/
 var Scene = function() {
 	var entList = [];
 	var entListSize = 0;
@@ -259,8 +293,13 @@ window.onload = function(e) {
 	
 	var sniper = new Entity(10,10, 53, 63, 20) ;
 	
+	var wall1 = new Entity(100, 100, 50, 50);
+	var wall2 = new Entity(400, 50, 100, 50);
+	var wall3 = new Entity(222, 134, 50, 100);
+	
+	
+	
 	sniper.playAnimation = function() {	
-		
 		
 		this.sprite.render();
 		/*TODO  draw crosshair */
@@ -308,6 +347,7 @@ window.onload = function(e) {
 		 * */
 		 var snipermove = 0;
 		 if ( snipermove++ < dx * dy /2 ) {
+		
 				var e2 = err;
 				if ( e2 >= -dx ) {
 					err -=dy; 
@@ -371,6 +411,7 @@ window.onload = function(e) {
 			var sx = x < _tX ? 10 : -10;
 			var sy = y < _tY ? 10 : -10;
 			var err = (dx > dy ? dx : dy) /2;
+			
 			/* added more fly precission */
 		if ( rocketfly <= dx*dy/2) {
 			var e2 = err;
@@ -425,8 +466,13 @@ window.onload = function(e) {
 							console.log("exposion frames:"+frames);
 						} else {
 							explosion.stop();
+							explosion2.stop();
+							explosion3.stop();
+							explosion4.stop();
+							explosion5.stop();
+							
 							clearTimeout(id2);
-							console.log("Stop explosion");
+							console.log("Stop explosions");
 							callbacksStack.pop();
 							callbacksStack.pop();
 							callbacksStack.pop();
@@ -492,6 +538,9 @@ var mainrender = function(timeout) {
 		dblctx[0].fillRect(0,0,600,300);
 		// always render main entity sprite
 		sniper.playAnimation();
+		wall1.drawBox("red", dblctx[0]);
+		wall2.drawBox("green", dblctx[0]);
+		wall3.drawBox("blue", dblctx[0]);
 		
 		(function(e) {
 			/* pefrom some game logic,
@@ -548,49 +597,47 @@ var mainrender = function(timeout) {
 		
 		/* move to entity class */
 /* Move sniper */
-	function moveSniper(e) {
+function moveSniper(e) {
 		console.log("MOVE");
 		/* draw the red circle animation */
-		var i = 0;
-		var rad = 100;
-		var fff = function() {
-			var id = null;
-			if ( i <= 100 ) {
-				/*TODO remove console logger */
-				console.log("DRAWING CIRCLE"+rad);
-				i+=12;
-				rad -= 10;
-				drawCircle(e.clientX, e.clientY, rad, dblctx[0]);
-				id = setTimeout(fff, 60);
-				} else { 
-					console.log("STOP DRAWING CIRCLE");
-					clearTimeout(id);
-				}
-			};
-			/* put it to callbacks stack */
-			callbacksStack.push(fff);
+	var i = 0;
+	var rad = 100;
+	var fff = function() {
+		var id = null;
+		if ( i <= 100 ) {
+			/*TODO remove console logger */
+			console.log("DRAWING CIRCLE"+rad);
+			i+=12;
+			rad -= 10;
+			drawCircle(e.clientX, e.clientY, rad, dblctx[0]);
+			id = setTimeout(fff, 60);
+			} else { 
+				console.log("STOP DRAWING CIRCLE");
+				clearTimeout(id);
+			}
+		};
+		/* put it to callbacks stack */
+		callbacksStack.push(fff);			
+		var dx = e.clientX - sniper.getXYRWH().x;
+		var dy = e.clientY - sniper.getXYRWH().y;
+		var rot = Math.atan2(dx, -dy) ;//* 180/ Math.PI;
+		sniper.setXYRWH(sniper.getXYRWH().x,
+						sniper.getXYRWH().y,
+						rot,
+						sniper.getXYRWH().w,
+						sniper.getXYRWH().h);
+						sniper.getSprite().setXYR(
+									sniper.getSprite().getXYR().x,
+									sniper.getSprite().getXYR().y,
+									rot);
 							
-			var dx = e.clientX - sniper.getXYRWH().x;
-			var dy = e.clientY - sniper.getXYRWH().y;
-			var rot = Math.atan2(dx, -dy) ;//* 180/ Math.PI;
-			sniper.setXYRWH(sniper.getXYRWH().x,
-							sniper.getXYRWH().y,
-							rot,
-							sniper.getXYRWH().w,
-							sniper.getXYRWH().h);
-							sniper.getSprite().setXYR(
-										sniper.getSprite().getXYR().x,
-										sniper.getSprite().getXYR().y,
-										rot);
-							
-							sniper.setTargetXY(e.clientX, e.clientY);
-							sniper.targetTo();
+						sniper.setTargetXY(e.clientX, e.clientY);
+						sniper.targetTo();
 } // END MOVE SNIPER FUNCTION
 
 
-		window.onclick = function(e) {
+	window.onclick = function(e) {
 				events = e;
-				
 				switch (e.which) {
 					case 1: /* fire missl */
 							/* add variable is firing to prevent moving  */
@@ -624,6 +671,7 @@ var mainrender = function(timeout) {
 	   var isPressed = 0;
 	   window.onkeydown = function(e) {
 		   if ( e.keyCode == 32 ) {
+			   
 			   if ( isPressed++ % 2 == 0 ) {
 				   isPaused = false;
 				   mainrender(1000);
@@ -634,7 +682,11 @@ var mainrender = function(timeout) {
 		   } 
 	   } // end PAUSE option
 	    
-}; // END wondow.onload(); 			
+} // END wondow.onload(); 			
+}};
+
+var g = new GameObjectWrapper(); 
 
 
+g.newGame();
 /*************************************************************************/
